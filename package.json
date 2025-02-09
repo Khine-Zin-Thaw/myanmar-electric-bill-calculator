@@ -2,8 +2,9 @@
     "name": "electricity-bill-calculator",
     "version": "1.0.0",
     "scripts": {
-      "dev": "vercel dev"
+        "dev": "vercel dev"
     },
-    "dependencies": {}
-  }
-  
+    "dependencies": {
+        "express": "^4.21.2"
+    }
+}
