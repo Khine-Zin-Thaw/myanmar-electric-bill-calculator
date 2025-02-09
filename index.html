@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electricity Bill Calculator</title>
+</head>
+<body>
+  <h1>Electricity Bill Calculation</h1>
+  <form id="electricity-form">
+    <label for="lastReading">Last Month's Meter Reading:</label>
+    <input type="number" id="lastReading" name="lastReading" required><br><br>
+    
+    <label for="currentReading">This Month's Meter Reading:</label>
+    <input type="number" id="currentReading" name="currentReading" required><br><br>
+    
+    <button type="submit">Calculate Bill</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    document.getElementById("electricity-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const lastReading = parseFloat(document.getElementById("lastReading").value);
+      const currentReading = parseFloat(document.getElementById("currentReading").value);
+
+      const response = await fetch(`/api/calculateBill?lastReading=${lastReading}&currentReading=${currentReading}`);
+      const data = await response.json();
+
+      if (data.error) {
+        document.getElementById("result").innerHTML = `<p style="color: red;">${data.error}</p>`;
+      } else {
+        let breakdownHtml = '';
+        data.breakdown.forEach(([tierUnits, price, cost]) => {
+          breakdownHtml += `<p>${tierUnits} units @ ${price}/unit = ${cost}</p>`;
+        });
+        document.getElementById("result").innerHTML = `
+          <p>Last Reading: ${data.lastReading}</p>
+          <p>Current Reading: ${data.currentReading}</p>
+          <div>${breakdownHtml}</div>
+          <p>Total Units Consumed: ${data.totalUnits}</p>
+          <p>Total Cost: ${data.totalCost}</p>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>
